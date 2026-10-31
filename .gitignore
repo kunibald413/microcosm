@@ -1,1 +1,5 @@
 build/
+
+# Local machine config (never commit real paths)
+.env
+local.cmake

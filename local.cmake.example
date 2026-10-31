@@ -1,0 +1,3 @@
+# Copy this file to local.cmake and fill in your SDL3 SDK path.
+# local.cmake is git-ignored.
+set(SDL3_DIR "/path/to/SDL3-3.4.12/cmake" CACHE PATH "")

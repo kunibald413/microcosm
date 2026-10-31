@@ -1,13 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -e  # stop on error
 
-# Create build directory if it doesn't exist
-mkdir -p build
+# Default to Debug, pass "Release" (or CMAKE_BUILD_TYPE value) as argument to match build config
+CONFIG=${1:-Debug}
 
-# Move into build, run CMake, then build
-cd build
-cmake ..
-cmake --build .
+# Build via make.sh so we always run a fresh binary
+./make.sh ${CONFIG}
 
-# Go back and run the executable
-cd ..
-./build/microcosm
+./build/${CONFIG}/microcosm.exe
