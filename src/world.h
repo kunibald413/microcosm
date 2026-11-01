@@ -1,6 +1,7 @@
 #ifndef WORLD_H
 #define WORLD_H
 
+#include "base.h"  // u32, u64
 #include "agent.h"
 #include "pcg.h"
 #include <stdbool.h>

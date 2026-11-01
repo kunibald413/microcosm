@@ -1,3 +1,4 @@
+#include "base.h"  // u32, u64
 #include "world.h"
 #include "math_const.h"
 #include <math.h>  // cos, sin
@@ -41,7 +42,7 @@ void World_Init(World *w, int count, double width, double height)
 
     w->Agents[AGENT_NULL] = (Agent){0};
 
-    const uint64_t rng_seed = 1337;
+    const u64 rng_seed = 1337;
     Pcg32_Srand(&w->Rng, rng_seed, PCG_DEFAULT_INC_64);
 
     for (int i = 1; i <= count; i++) {
@@ -89,9 +90,9 @@ void World_Update(World *w, double dt)
 
     if (w->Ticks % FOOD_ADD_PERIOD == 0) {
         const int fx = (int)Pcg32_BoundedRand(
-            &w->Rng, (uint32_t)w->FoodCols);
+            &w->Rng, (u32)w->FoodCols);
         const int fy = (int)Pcg32_BoundedRand(
-            &w->Rng, (uint32_t)w->FoodRows);
+            &w->Rng, (u32)w->FoodRows);
         w->Food[fy][fx] = (float)FOOD_MAX;
     }
 

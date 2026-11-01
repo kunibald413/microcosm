@@ -1,6 +1,7 @@
 #ifndef VIEW_H
 #define VIEW_H
 
+#include "base.h"  // u32, u64
 #include <stdbool.h>
 #include <SDL3/SDL.h> // SDL_Window, SDL_Renderer
 #include "agent.h"

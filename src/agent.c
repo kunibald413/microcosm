@@ -1,3 +1,4 @@
+#include "base.h"  // u32, u64
 #include "agent.h"
 
 void Agent_Init(Agent *a, double x, double y)

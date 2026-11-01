@@ -1,3 +1,4 @@
+#include "base.h"          // u32, u64
 #include <SDL3/SDL.h>      // SDL_Event, SDL_GetTicks, SDL_Delay
 #include <SDL3/SDL_main.h> // SDL_main
 #include <stdbool.h>
@@ -5,7 +6,7 @@
 #include "view.h"
 #include "world.h"
 
-static const Uint64 FRAME_NS = 1000000000ULL / 60ULL;
+static const u64 FRAME_NS = 1000000000ULL / 60ULL;
 
 int main(int argc, char *argv[])
 {
@@ -31,11 +32,11 @@ int main(int argc, char *argv[])
     View_LogWorldSize(&world);
 
 
-    Uint64 last_ns = SDL_GetTicksNS();
+    u64 last_ns = SDL_GetTicksNS();
     bool quit = false;
 
     while (!quit) {
-        const Uint64 frame_start_ns = SDL_GetTicksNS();
+        const u64 frame_start_ns = SDL_GetTicksNS();
         const double dt =
             (double)(frame_start_ns - last_ns) / 1000000000.0;
         last_ns = frame_start_ns;
@@ -54,7 +55,7 @@ int main(int argc, char *argv[])
         View_Present(&view);
 
         // frame cap, even if we have vsync enabled, just keep this
-        const Uint64 elapsed_ns =
+        const u64 elapsed_ns =
             SDL_GetTicksNS() - frame_start_ns;
         if (FRAME_NS > elapsed_ns) {
             SDL_DelayNS(FRAME_NS - elapsed_ns);

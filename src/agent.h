@@ -1,6 +1,8 @@
 #ifndef AGENT_H
 #define AGENT_H
 
+#include "base.h"  // u32, u64
+
 typedef struct {
     double X;
     double Y;

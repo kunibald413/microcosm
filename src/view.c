@@ -1,3 +1,4 @@
+#include "base.h"  // u32, u64
 #include "view.h"
 #include "math_const.h"
 #include <math.h> // cos, sin
@@ -132,10 +133,8 @@ void View_LogWorldSize(const World *w)
 {
     (void)w;   // reserved for future per-world fields
 
-    const unsigned long long bytes =
-        (unsigned long long)sizeof(World);
-    const unsigned long long food =
-        (unsigned long long)sizeof(((World *)0)->Food);
+    const u64 bytes = (u64)sizeof(World);
+    const u64 food = (u64)sizeof(((World *)0)->Food);
 
     const double bytes_per_mb = 1024.0 * 1024.0;
     SDL_Log("World: %llu bytes (%.2f MB)", bytes,
