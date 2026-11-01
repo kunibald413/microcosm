@@ -1,61 +1,53 @@
-#include <SDL3/SDL.h>
-#include <SDL3/SDL_main.h>
+#include <SDL3/SDL.h>      // SDL_Event, SDL_GetTicks, SDL_Delay
+#include <SDL3/SDL_main.h> // SDL_main
 #include <stdbool.h>
+#include "agent.h"
+#include "view.h"
 
-static const int kScreenWidth = 640;
-static const int kScreenHeight = 480;
-
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[])
+{
     (void)argc;
     (void)argv;
 
-    /* Initialize SDL video */
-    if (!SDL_Init(SDL_INIT_VIDEO)) {
-        SDL_Log("SDL could not initialize! SDL error: %s\n", SDL_GetError());
+    const int screen_width = 640;
+    const int screen_height = 480;
+
+    View view;
+    if (!View_Init(&view, "microcosm",
+                   screen_width, screen_height)) {
+        SDL_Log("View_Init failed: %s\n", SDL_GetError());
         return 1;
     }
 
-    /* Window + renderer in one call (0 == no extra window flags) */
-    SDL_Window* window = NULL;
-    SDL_Renderer* renderer = NULL;
-    if (!SDL_CreateWindowAndRenderer("microcosm", kScreenWidth, kScreenHeight,
-                                     0, &window, &renderer)) {
-        SDL_Log("Window/renderer could not be created! SDL error: %s\n",
-                SDL_GetError());
-        SDL_Quit();
-        return 1;
-    }
+    Agent agent;
+    Agent_Init(&agent, 
+        (double)screen_width / 2.0, 
+        (double)screen_height / 2.0);
 
-    /* Main loop */
+    Uint64 last = SDL_GetTicks();
     bool quit = false;
-    SDL_Event e;
+
     while (!quit) {
-        /* Process events */
+        SDL_Event e;
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_EVENT_QUIT) {
                 quit = true;
             }
         }
 
-        /* Clear the screen */
-        SDL_SetRenderDrawColor(renderer, 0x1E, 0x1E, 0x28, SDL_ALPHA_OPAQUE);
-        SDL_RenderClear(renderer);
+        const Uint64 now = SDL_GetTicks();
+        const double dt = (double)(now - last) / 1000.0;
+        last = now;
 
-        /* Draw something so we can tell the loop is really running */
-        SDL_FRect rect = { 240.0f, 200.0f, 160.0f, 120.0f };
-        SDL_SetRenderDrawColor(renderer, 0xE0, 0x50, 0x3C, SDL_ALPHA_OPAQUE);
-        SDL_RenderFillRect(renderer, &rect);
+        Agent_Update(&agent, dt);
 
-        /* Present the frame */
-        SDL_RenderPresent(renderer);
+        View_Clear(&view);
+        View_Draw_Agent(&view, &agent);
+        View_Present(&view);
 
-        SDL_Delay(1000 / 60);
+        SDL_Delay(16);
     }
 
-    /* Clean up */
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-
+    View_Destroy(&view);
     return 0;
 }

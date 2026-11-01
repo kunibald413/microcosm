@@ -14,7 +14,11 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/local.cmake" OPTIONAL)
 find_package(SDL3 3.2 REQUIRED CONFIG)
 message(STATUS "SDL3 config:  ${SDL3_DIR}")
 
-add_executable(microcosm src/main.c)
+add_executable(microcosm 
+    src/main.c
+    src/agent.c
+    src/view.c
+)
 
 target_link_libraries(microcosm PRIVATE SDL3::SDL3)
 
