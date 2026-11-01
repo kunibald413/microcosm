@@ -84,6 +84,10 @@ bool View_Init(View *v, const char *title, int width, int height)
         return false;
     }
 
+    if (!SDL_SetRenderVSync(v->Renderer, 1)) {
+        SDL_Log("vsync not set: %s", SDL_GetError());
+    }
+
     return true;
 }
 

@@ -5,6 +5,8 @@
 #include "view.h"
 #include "world.h"
 
+static const Uint64 FRAME_NS = 1000000000ULL / 60ULL;
+
 int main(int argc, char *argv[])
 {
     (void)argc;
@@ -26,10 +28,15 @@ int main(int argc, char *argv[])
         (double)screen_height);
 
 
-    Uint64 last = SDL_GetTicks();
+        Uint64 last_ns = SDL_GetTicksNS();
     bool quit = false;
 
     while (!quit) {
+        const Uint64 frame_start_ns = SDL_GetTicksNS();
+        const double dt =
+            (double)(frame_start_ns - last_ns) / 1000000000.0;
+        last_ns = frame_start_ns;
+
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_EVENT_QUIT) {
@@ -37,17 +44,18 @@ int main(int argc, char *argv[])
             }
         }
 
-        const Uint64 now = SDL_GetTicks();
-        const double dt = (double)(now - last) / 1000.0;
-        last = now;
-
         World_Update(&world, dt);
 
         View_Clear(&view);
         View_Draw_World(&view, &world);
         View_Present(&view);
 
-        SDL_Delay(16);
+        // frame cap, even if we have vsync enabled, just keep this
+        const Uint64 elapsed_ns =
+            SDL_GetTicksNS() - frame_start_ns;
+        if (FRAME_NS > elapsed_ns) {
+            SDL_DelayNS(FRAME_NS - elapsed_ns);
+        }
     }
 
     View_Destroy(&view);
