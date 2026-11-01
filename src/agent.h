@@ -15,6 +15,9 @@ typedef struct {
     double b;
 
     double SpikeLength; // spike extension, 0 to 1
+
+    double Health;
+    int    Age;
 } Agent;
 
 void Agent_Init(Agent *a, double x, double y);

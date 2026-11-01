@@ -100,7 +100,7 @@ void World_Update(World *w, double dt)
         if (!w->Active[i]) {
             continue;
         }
-        const Agent *a = &w->Agents[i];
+        Agent *a = &w->Agents[i];
 
         const int cx = (int)(a->X / FOOD_CELL_SIZE);
         const int cy = (int)(a->Y / FOOD_CELL_SIZE);
@@ -112,10 +112,32 @@ void World_Update(World *w, double dt)
         }
 
         if (w->Food[cy][cx] > 0.0f) {
-            w->Food[cy][cx] -= 0.02f;
+            const double eaten = 0.5 * dt;
+            w->Food[cy][cx] -= (float)eaten;
             if (w->Food[cy][cx] < 0.0f) {
                 w->Food[cy][cx] = 0.0f;
             }
+
+            a->Health += HEALTH_EAT_PER_SEC * dt;
+            if (a->Health > HEALTH_MAX) {
+                a->Health = HEALTH_MAX;
+            }
+        }
+    }
+
+    for (int i = 0; i < MAX_AGENTS; i++) {
+        if (!w->Active[i]) {
+            continue;
+        }
+
+        Agent *a = &w->Agents[i];
+
+        a->Health -= HEALTH_LOSS_PER_SEC * dt;
+        a->Age += 1;
+
+        if (a->Health <= 0.0) {
+            w->Active[i] = false;
+            w->Count--;
         }
     }
 }

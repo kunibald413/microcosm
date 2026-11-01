@@ -11,6 +11,8 @@ void Agent_Init(Agent *a, double x, double y)
     a->g = 0.8;
     a->b = 0.3;
     a->SpikeLength = 0.6;
+    a->Health = 1.0;
+    a->Age = 0;
 }
 
 void Agent_Update(Agent *a, double dt)

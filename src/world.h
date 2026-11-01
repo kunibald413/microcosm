@@ -11,11 +11,15 @@ enum {
     MAX_AGENTS = 64,  // total slots, includes null slot at [0]
     MAX_FOOD_COLS = 128,
     MAX_FOOD_ROWS = 128,
-    FOOD_ADD_PERIOD = 30
+    FOOD_ADD_PERIOD = 60,
+    BASELOSS_PER_SEC = 1
 };
 
 static const double FOOD_CELL_SIZE = 16.0;
 static const double FOOD_MAX = 1.0;
+static const double HEALTH_LOSS_PER_SEC = 0.02;
+static const double HEALTH_EAT_PER_SEC = 1.0;
+static const double HEALTH_MAX = 2.0;
 
 typedef struct {
     Agent  Agents[MAX_AGENTS];

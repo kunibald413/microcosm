@@ -147,24 +147,44 @@ void View_Draw_Agent(View *v, const Agent *a)
 {
     draw_circle_fill(v, a);
     draw_circle_outline(v, a);
+
+    const double hp = a->Health / HEALTH_MAX;
+    SDL_FRect bar = {
+        (float)(a->X - a->Radius),
+        (float)(a->Y + a->Radius + 4.0),
+        (float)(a->Radius * 2.0 * hp),
+        3.0f
+    };
+    SDL_SetRenderDrawColor(v->Renderer, 0, 220, 0, 255);
+    SDL_RenderFillRect(v->Renderer, &bar);
+
     draw_spike(v, a);
 }
 
 void View_Draw_Food(View *v, const World *w)
 {
-    SDL_SetRenderDrawColor(v->Renderer, 0x40, 0x80, 0x40, 255);
-
     for (int y = 0; y < w->FoodRows; y++) {
         for (int x = 0; x < w->FoodCols; x++) {
             if (w->Food[y][x] <= 0.0f) {
                 continue;
             }
 
+            const double t = (double)w->Food[y][x] / FOOD_MAX;
+            const float cell = (float)FOOD_CELL_SIZE;
+            const float side = cell * (float)t;
+            const float pad = (cell - side) * 0.5f;
+
+            SDL_SetRenderDrawColor(v->Renderer,
+                (Uint8)(0x40 * t),
+                (Uint8)(0x80 * t),
+                (Uint8)(0x40 * t),
+                255);
+
             SDL_FRect r = {
-                (float)(x * FOOD_CELL_SIZE),
-                (float)(y * FOOD_CELL_SIZE),
-                (float)FOOD_CELL_SIZE,
-                (float)FOOD_CELL_SIZE
+                (float)x * cell + pad,
+                (float)y * cell + pad,
+                side,
+                side
             };
             SDL_RenderFillRect(v->Renderer, &r);
         }

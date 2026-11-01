@@ -14,8 +14,8 @@ int main(int argc, char *argv[])
     (void)argc;
     (void)argv;
 
-    const int screen_width = 640;
-    const int screen_height = 480;
+    const int screen_width = 740;
+    const int screen_height = 580;
 
     View view;
     if (!View_Init(&view, "microcosm",
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     Arena_Log(main_arena);
 
     World *world = Arena_Push(main_arena, (u64)sizeof(World));
-    World_Init(world, 4,
+    World_Init(world, 44,
         (double)screen_width,
         (double)screen_height);
 
