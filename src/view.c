@@ -85,6 +85,10 @@ bool View_Init(View *v, const char *title, int width, int height)
         return false;
     }
 
+    v->LastFpsTime = SDL_GetTicks();
+    v->FrameCount  = 0;
+    v->Fps         = 0;
+
     if (!SDL_SetRenderVSync(v->Renderer, 1)) {
         SDL_Log("vsync not set: %s", SDL_GetError());
     }
@@ -110,6 +114,34 @@ void View_Clear(View *v)
 void View_Present(View *v)
 {
     SDL_RenderPresent(v->Renderer);
+}
+
+void View_UpdateFPS(View *v)
+{
+    v->FrameCount++;
+
+    const u64 now = SDL_GetTicks();
+    if (now - v->LastFpsTime >= 1000) {
+        v->Fps         = v->FrameCount;
+        v->FrameCount  = 0;
+        v->LastFpsTime = now;
+    }
+}
+
+void View_DrawStats(View *v, const World *w)
+{
+    const int alive = w->Count;
+    const int dead  = w->DeathCount;
+
+    char buf[128];
+    snprintf(buf, sizeof(buf),
+             "FPS %d  alive %d  dead %d",
+             v->Fps, alive, dead);
+
+    SDL_SetRenderScale(v->Renderer, 2.0f, 2.0f);
+    SDL_SetRenderDrawColor(v->Renderer, 255, 255, 255, 255);
+    SDL_RenderDebugText(v->Renderer, 5.0f, 5.0f, buf);
+    SDL_SetRenderScale(v->Renderer, 1.0f, 1.0f);
 }
 
 void View_LogInfo(const View *v)

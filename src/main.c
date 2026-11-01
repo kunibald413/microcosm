@@ -55,8 +55,10 @@ int main(int argc, char *argv[])
 
         World_Update(world, dt);
 
+        View_UpdateFPS(&view);
         View_Clear(&view);
         View_Draw_World(&view, world);
+        View_DrawStats(&view, world);
         View_Present(&view);
 
         // frame cap, even if we have vsync enabled, just keep this

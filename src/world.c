@@ -138,6 +138,7 @@ void World_Update(World *w, double dt)
         if (a->Health <= 0.0) {
             w->Active[i] = false;
             w->Count--;
+            w->DeathCount++;
         }
     }
 }

@@ -25,6 +25,7 @@ typedef struct {
     Agent  Agents[MAX_AGENTS];
     bool   Active[MAX_AGENTS];
     int    Count;
+    int    DeathCount;
     double Width;
     double Height;
     Pcg32  Rng;

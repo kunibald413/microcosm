@@ -8,8 +8,11 @@
 #include "world.h"
 
 typedef struct {
-    SDL_Window *Window;
+    SDL_Window   *Window;
     SDL_Renderer *Renderer;
+    u64           LastFpsTime;   // ms timestamp of last FPS sample
+    int           FrameCount;    // frames since last sample
+    int           Fps;           // last measured FPS
 } View;
 
 bool View_Init(View *v, const char *title, int width, int height);
@@ -21,5 +24,7 @@ void View_Draw_Food(View *v, const World *w);
 void View_Draw_World(View *v, const World *w);
 void View_LogInfo(const View *v);
 void View_LogWorldSize(const World *w);
+void View_UpdateFPS(View *v);
+void View_DrawStats(View *v, const World *w);
 
 #endif
