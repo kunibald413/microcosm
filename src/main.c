@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     }
 
     World world;
-    World_Init(&world, 3, 
+    World_Init(&world, 4, 
         (double)screen_width,
         (double)screen_height);
 

@@ -19,6 +19,7 @@ add_executable(${PROJECT_NAME}
     src/agent.c
     src/view.c
     src/world.c
+    src/pcg.c
 )
 
 add_library(project_warnings INTERFACE)

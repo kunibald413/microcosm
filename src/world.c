@@ -4,7 +4,7 @@
 #include <stdlib.h> // rand, RAND_MAX
 
 // world units per second
-static const double AGENT_SPEED = 60.0; 
+static const double AGENT_SPEED = 30.0; 
 // radians per second
 static const double AGENT_WANDER_RATE = 0.6;
 
@@ -20,9 +20,12 @@ void World_Init(World *w, int count, double width, double height)
 
     w->Agents[AGENT_NULL] = (Agent){0};
 
+    const uint64_t rng_seed = 1337;
+    Pcg32_Srand(&w->Rng, rng_seed, PCG_DEFAULT_INC_64);
+
     for (int i = 1; i <= count; i++) {
-        const double x = ((double)rand() / RAND_MAX) * width;
-        const double y = ((double)rand() / RAND_MAX) * height;
+        const double x = Pcg32_Unit(&w->Rng) * width;
+        const double y = Pcg32_Unit(&w->Rng) * height;
 
         Agent_Init(&w->Agents[i], x, y);
         w->Agents[i].Angle = ((double)rand() / RAND_MAX) * MATH_TAU;
@@ -39,7 +42,7 @@ void World_Update(World *w, double dt)
 
         Agent *a = &w->Agents[i];
 
-        a->Angle += (((double)rand() / RAND_MAX) - 0.5)
+        a->Angle += (Pcg32_Unit(&w->Rng) - 0.5)
                     * AGENT_WANDER_RATE * dt;
 
         a->X += cos(a->Angle) * AGENT_SPEED * dt;

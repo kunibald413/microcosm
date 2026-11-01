@@ -2,6 +2,7 @@
 #define WORLD_H
 
 #include "agent.h"
+#include "pcg.h"
 #include <stdbool.h>
 
 enum {
@@ -14,6 +15,7 @@ typedef struct {
     int    Count;
     double Width;
     double Height;
+    Pcg32 Rng;
 } World;
 
 void World_Init(World *w, int count, double width, double height);
