@@ -16,6 +16,7 @@ void View_Destroy(View *v);
 void View_Clear(View *v);
 void View_Present(View *v);
 void View_Draw_Agent(View *v, const Agent *a);
+void View_Draw_Food(View *v, const World *w);
 void View_Draw_World(View *v, const World *w);
 
 #endif

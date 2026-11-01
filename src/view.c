@@ -118,8 +118,30 @@ void View_Draw_Agent(View *v, const Agent *a)
     draw_spike(v, a);
 }
 
+void View_Draw_Food(View *v, const World *w)
+{
+    SDL_SetRenderDrawColor(v->Renderer, 0x40, 0x80, 0x40, 255);
+
+    for (int y = 0; y < FOOD_ROWS; y++) {
+        for (int x = 0; x < FOOD_COLS; x++) {
+            if (w->Food[y][x] <= 0.0f) {
+                continue;
+            }
+
+            SDL_FRect r = {
+                (float)(x * FOOD_CELL),
+                (float)(y * FOOD_CELL),
+                (float)FOOD_CELL,
+                (float)FOOD_CELL
+            };
+            SDL_RenderFillRect(v->Renderer, &r);
+        }
+    }
+}
+
 void View_Draw_World(View *v, const World *w)
 {
+    View_Draw_Food(v, w);
     for (int i = 0; i < MAX_AGENTS; i++) {
         if (!w->Active[i]) {
             continue;

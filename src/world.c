@@ -30,6 +30,13 @@ void World_Init(World *w, int count, double width, double height)
         w->Agents[i].Angle = Pcg32_Unit(&w->Rng) * MATH_TAU;
         w->Active[i] = true;
     }
+
+    for (int y = 0; y < FOOD_ROWS; y++) {
+        for (int x = 0; x < FOOD_COLS; x++) {
+            w->Food[y][x] = 0.0f;
+        }
+    }
+    w->Ticks = 0;
 }
 
 void World_Update(World *w, double dt)
@@ -61,5 +68,40 @@ void World_Update(World *w, double dt)
         if (a->X >= w->Width)  a->X -= w->Width;
         if (a->Y < 0.0)        a->Y += w->Height;
         if (a->Y >= w->Height) a->Y -= w->Height;
+    }
+
+    w->Ticks++;
+
+    // spawn food
+    if (w->Ticks % FOOD_ADD_PERIOD == 0) {
+        const int fx =
+            (int)Pcg32_BoundedRand(&w->Rng, FOOD_COLS);
+        const int fy =
+            (int)Pcg32_BoundedRand(&w->Rng, FOOD_ROWS);
+        w->Food[fy][fx] = (float)FOOD_MAX;
+    }
+
+    // agents consume food
+    for (int i = 0; i < MAX_AGENTS; i++) {
+        if (!w->Active[i]) {
+            continue;
+        }
+        const Agent *a = &w->Agents[i];
+
+        const int cx = (int)(a->X / FOOD_CELL);
+        const int cy = (int)(a->Y / FOOD_CELL);
+        if (cx < 0 || cx >= FOOD_COLS) {
+            continue;
+        }
+        if (cy < 0 || cy >= FOOD_ROWS) {
+            continue;
+        }
+
+        if (w->Food[cy][cx] > 0.0f) {
+            w->Food[cy][cx] -= 0.02f;
+            if (w->Food[cy][cx] < 0.0f) {
+                w->Food[cy][cx] = 0.0f;
+            }
+        }
     }
 }
