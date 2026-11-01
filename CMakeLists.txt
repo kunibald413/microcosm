@@ -14,15 +14,28 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/local.cmake" OPTIONAL)
 find_package(SDL3 3.2 REQUIRED CONFIG)
 message(STATUS "SDL3 config:  ${SDL3_DIR}")
 
-add_executable(microcosm 
+add_executable(${PROJECT_NAME} 
     src/main.c
     src/agent.c
     src/view.c
 )
 
-target_link_libraries(microcosm PRIVATE SDL3::SDL3)
+add_library(project_warnings INTERFACE)
+target_compile_options(project_warnings INTERFACE
+    -Wall -Wextra -Wpedantic
+    -Wconversion -Wsign-conversion
+    -Werror
+    -Wshadow
 
-add_custom_command(TARGET microcosm POST_BUILD
+    -Wno-error=deprecated-declarations
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE 
+    SDL3::SDL3
+    project_warnings
+)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         $<TARGET_FILE:SDL3::SDL3>
         $<TARGET_FILE_DIR:microcosm>
