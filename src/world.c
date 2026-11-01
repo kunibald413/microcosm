@@ -13,6 +13,28 @@ void World_Init(World *w, int count, double width, double height)
     w->Width  = width;
     w->Height = height;
 
+    w->FoodCols = (int)(width  / FOOD_CELL_SIZE);
+    w->FoodRows = (int)(height / FOOD_CELL_SIZE);
+    if (w->FoodCols > MAX_FOOD_COLS) {
+        w->FoodCols = MAX_FOOD_COLS;
+    }
+    if (w->FoodRows > MAX_FOOD_ROWS) {
+        w->FoodRows = MAX_FOOD_ROWS;
+    }
+    if (w->FoodCols < 1) {
+        w->FoodCols = 1;
+    }
+    if (w->FoodRows < 1) {
+        w->FoodRows = 1;
+    }
+    w->Ticks = 0;
+
+    for (int y = 0; y < w->FoodRows; y++) {
+        for (int x = 0; x < w->FoodCols; x++) {
+            w->Food[y][x] = 0.0f;
+        }
+    }
+
     for (int i = 0; i < MAX_AGENTS; i++) {
         w->Active[i] = false;
     }
@@ -30,13 +52,6 @@ void World_Init(World *w, int count, double width, double height)
         w->Agents[i].Angle = Pcg32_Unit(&w->Rng) * MATH_TAU;
         w->Active[i] = true;
     }
-
-    for (int y = 0; y < FOOD_ROWS; y++) {
-        for (int x = 0; x < FOOD_COLS; x++) {
-            w->Food[y][x] = 0.0f;
-        }
-    }
-    w->Ticks = 0;
 }
 
 void World_Update(World *w, double dt)
@@ -72,28 +87,26 @@ void World_Update(World *w, double dt)
 
     w->Ticks++;
 
-    // spawn food
     if (w->Ticks % FOOD_ADD_PERIOD == 0) {
-        const int fx =
-            (int)Pcg32_BoundedRand(&w->Rng, FOOD_COLS);
-        const int fy =
-            (int)Pcg32_BoundedRand(&w->Rng, FOOD_ROWS);
+        const int fx = (int)Pcg32_BoundedRand(
+            &w->Rng, (uint32_t)w->FoodCols);
+        const int fy = (int)Pcg32_BoundedRand(
+            &w->Rng, (uint32_t)w->FoodRows);
         w->Food[fy][fx] = (float)FOOD_MAX;
     }
 
-    // agents consume food
     for (int i = 0; i < MAX_AGENTS; i++) {
         if (!w->Active[i]) {
             continue;
         }
         const Agent *a = &w->Agents[i];
 
-        const int cx = (int)(a->X / FOOD_CELL);
-        const int cy = (int)(a->Y / FOOD_CELL);
-        if (cx < 0 || cx >= FOOD_COLS) {
+        const int cx = (int)(a->X / FOOD_CELL_SIZE);
+        const int cy = (int)(a->Y / FOOD_CELL_SIZE);
+        if (cx < 0 || cx >= w->FoodCols) {
             continue;
         }
-        if (cy < 0 || cy >= FOOD_ROWS) {
+        if (cy < 0 || cy >= w->FoodRows) {
             continue;
         }
 

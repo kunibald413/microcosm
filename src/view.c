@@ -122,17 +122,17 @@ void View_Draw_Food(View *v, const World *w)
 {
     SDL_SetRenderDrawColor(v->Renderer, 0x40, 0x80, 0x40, 255);
 
-    for (int y = 0; y < FOOD_ROWS; y++) {
-        for (int x = 0; x < FOOD_COLS; x++) {
+    for (int y = 0; y < w->FoodRows; y++) {
+        for (int x = 0; x < w->FoodCols; x++) {
             if (w->Food[y][x] <= 0.0f) {
                 continue;
             }
 
             SDL_FRect r = {
-                (float)(x * FOOD_CELL),
-                (float)(y * FOOD_CELL),
-                (float)FOOD_CELL,
-                (float)FOOD_CELL
+                (float)(x * FOOD_CELL_SIZE),
+                (float)(y * FOOD_CELL_SIZE),
+                (float)FOOD_CELL_SIZE,
+                (float)FOOD_CELL_SIZE
             };
             SDL_RenderFillRect(v->Renderer, &r);
         }
