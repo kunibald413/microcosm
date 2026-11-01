@@ -48,3 +48,26 @@ responses only. They do not apply to code, comments, or commit messages.
 - Use a table only when two or more items have the same set of properties.
 - Answer the question that the user asks. Do not add topics that the user
   did not ask about.
+
+
+
+# General coding
+- Do not add comments to the code in generally. 
+- If comments are requested, use `//` comments, never `/* ... */`. Stick to single-line comments, and cut the complexity.
+- Never have more than 79 characters per line
+- Comment non-standard-library #includes to say what symbols you use from them.
+- Provide include guards for all headers to prevent double inclusion
+- No global or static variables if you can help it (you probably can)
+- Minimize what you expose; declare top-level names static where you can
+- Immutability saves lives: use const everywhere you can
+- Use double rather than float, unless you have a specific reason otherwise
+- Declare variables as late as possible
+- Use bool from stdbool.h whenever you have a boolean value
+- Never change state within an expression (e.g. with assignments or ++)
+- Avoid non-pure or non-trivial function calls in expressions
+- Always use brackets, even for single-statement blocks
+
+# Git commits
+- Never add a `Co-Authored-By` trailer to commit messages.
+- Commit messages should be a single short line describing what changed. No body, no bullet points, no "why" paragraph.
+- Never run `git push` under any circumstances!
