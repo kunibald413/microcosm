@@ -111,6 +111,39 @@ void View_Present(View *v)
     SDL_RenderPresent(v->Renderer);
 }
 
+void View_LogInfo(const View *v)
+{
+    const int version = SDL_GetVersion();
+    SDL_Log("SDL %d.%d.%d",
+        SDL_VERSIONNUM_MAJOR(version),
+        SDL_VERSIONNUM_MINOR(version),
+        SDL_VERSIONNUM_MICRO(version));
+
+    SDL_PropertiesID props =
+        SDL_GetRendererProperties((SDL_Renderer *)v->Renderer);
+    const char *name = SDL_GetStringProperty(
+        props, SDL_PROP_RENDERER_NAME_STRING, "unknown");
+    const bool is_software = (SDL_strcmp(name, "software") == 0);
+    SDL_Log("Renderer: %s (%s)", name,
+        is_software ? "CPU" : "GPU");
+}
+
+void View_LogWorldSize(const World *w)
+{
+    (void)w;   // reserved for future per-world fields
+
+    const unsigned long long bytes =
+        (unsigned long long)sizeof(World);
+    const unsigned long long food =
+        (unsigned long long)sizeof(((World *)0)->Food);
+
+    const double bytes_per_mb = 1024.0 * 1024.0;
+    SDL_Log("World: %llu bytes (%.2f MB)", bytes,
+        (double)bytes / bytes_per_mb);
+    SDL_Log("Food grid: %llu bytes (%.2f MB)", food,
+        (double)food / bytes_per_mb);
+}
+
 void View_Draw_Agent(View *v, const Agent *a)
 {
     draw_circle_fill(v, a);

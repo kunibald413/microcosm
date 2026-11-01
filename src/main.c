@@ -27,8 +27,11 @@ int main(int argc, char *argv[])
         (double)screen_width,
         (double)screen_height);
 
+    View_LogInfo(&view);
+    View_LogWorldSize(&world);
 
-        Uint64 last_ns = SDL_GetTicksNS();
+
+    Uint64 last_ns = SDL_GetTicksNS();
     bool quit = false;
 
     while (!quit) {

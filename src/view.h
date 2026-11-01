@@ -18,5 +18,7 @@ void View_Present(View *v);
 void View_Draw_Agent(View *v, const Agent *a);
 void View_Draw_Food(View *v, const World *w);
 void View_Draw_World(View *v, const World *w);
+void View_LogInfo(const View *v);
+void View_LogWorldSize(const World *w);
 
 #endif
