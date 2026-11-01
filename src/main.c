@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     Arena_Log(main_arena);
 
     World *world = Arena_Push(main_arena, (u64)sizeof(World));
-    World_Init(world, 44,
+    World_Init(world, 2,
         (double)screen_width,
         (double)screen_height);
 
