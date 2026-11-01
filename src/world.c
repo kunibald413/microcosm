@@ -1,7 +1,6 @@
 #include "world.h"
 #include "math_const.h"
 #include <math.h>  // cos, sin
-#include <stdlib.h> // rand, RAND_MAX
 
 // world units per second
 static const double AGENT_SPEED = 30.0; 
@@ -28,7 +27,7 @@ void World_Init(World *w, int count, double width, double height)
         const double y = Pcg32_Unit(&w->Rng) * height;
 
         Agent_Init(&w->Agents[i], x, y);
-        w->Agents[i].Angle = ((double)rand() / RAND_MAX) * MATH_TAU;
+        w->Agents[i].Angle = Pcg32_Unit(&w->Rng) * MATH_TAU;
         w->Active[i] = true;
     }
 }
