@@ -44,6 +44,14 @@ void World_Update(World *w, double dt)
         a->Angle += (Pcg32_Unit(&w->Rng) - 0.5)
                     * AGENT_WANDER_RATE * dt;
 
+        // keep heading in [-PI, PI] so it stays small forever
+        if (a->Angle < -MATH_PI) {
+            a->Angle += MATH_TAU;
+        }
+        if (a->Angle >  MATH_PI) {
+            a->Angle -= MATH_TAU;
+        }
+
         a->X += cos(a->Angle) * AGENT_SPEED * dt;
         a->Y += sin(a->Angle) * AGENT_SPEED * dt;
 
