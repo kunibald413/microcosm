@@ -18,6 +18,7 @@ add_executable(${PROJECT_NAME}
     src/main.c
     src/agent.c
     src/view.c
+    src/world.c
 )
 
 add_library(project_warnings INTERFACE)

@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include "agent.h"
 #include "view.h"
+#include "world.h"
 
 int main(int argc, char *argv[])
 {
@@ -19,10 +20,11 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    Agent agent;
-    Agent_Init(&agent, 
-        (double)screen_width / 2.0, 
-        (double)screen_height / 2.0);
+    World world;
+    World_Init(&world, 3, 
+        (double)screen_width,
+        (double)screen_height);
+
 
     Uint64 last = SDL_GetTicks();
     bool quit = false;
@@ -39,10 +41,10 @@ int main(int argc, char *argv[])
         const double dt = (double)(now - last) / 1000.0;
         last = now;
 
-        Agent_Update(&agent, dt);
+        World_Update(&world, dt);
 
         View_Clear(&view);
-        View_Draw_Agent(&view, &agent);
+        View_Draw_World(&view, &world);
         View_Present(&view);
 
         SDL_Delay(16);

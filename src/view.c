@@ -1,13 +1,11 @@
 #include "view.h"
+#include "math_const.h"
 #include <math.h> // cos, sin
 
 enum { 
     CIRCLE_SIDES = 16,
     INDICES_PER_TRIANGLE = 3
 };
-
-static const double MATH_PI = 3.14159265358979323846;
-static const double MATH_TAU = 2.0 * MATH_PI;
 
 static void draw_circle_fill(View *v, const Agent *a)
 {
@@ -114,4 +112,14 @@ void View_Draw_Agent(View *v, const Agent *a)
     draw_circle_fill(v, a);
     draw_circle_outline(v, a);
     draw_spike(v, a);
+}
+
+void View_Draw_World(View *v, const World *w)
+{
+    for (int i = 0; i < MAX_AGENTS; i++) {
+        if (!w->Active[i]) {
+            continue;
+        }
+        View_Draw_Agent(v, &w->Agents[i]);
+    }
 }
