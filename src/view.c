@@ -175,6 +175,42 @@ void View_LogWorldSize(const World *w)
         (double)food / bytes_per_mb);
 }
 
+void View_Draw_Agent_Eyes(View *v, const Agent *a) {
+    const double ang_l = a->Angle - EYE_OFFSET;
+    const double ang_r = a->Angle + EYE_OFFSET;
+    const double lx = a->X + cos(ang_l) * EYE_REACH;
+    const double ly = a->Y + sin(ang_l) * EYE_REACH;
+    const double rx = a->X + cos(ang_r) * EYE_REACH;
+    const double ry = a->Y + sin(ang_r) * EYE_REACH;
+
+    SDL_SetRenderDrawColor(v->Renderer, 128, 128, 128, 255);
+    SDL_RenderLine(v->Renderer,
+                   (float)a->X, (float)a->Y,
+                   (float)lx,   (float)ly);
+    SDL_RenderLine(v->Renderer,
+                   (float)a->X, (float)a->Y,
+                   (float)rx,   (float)ry);
+
+    double tl = a->Sensors[SENSOR_LEFT];
+    double tr = a->Sensors[SENSOR_RIGHT];
+    if (tl > 1.0) tl = 1.0;
+    if (tr > 1.0) tr = 1.0;
+
+    SDL_SetRenderDrawColor(v->Renderer,
+        (Uint8)(255.0 * tl), 0, 0, 255);
+    SDL_FRect el = {
+        (float)lx - 3.0f, (float)ly - 3.0f, 6.0f, 6.0f
+    };
+    SDL_RenderFillRect(v->Renderer, &el);
+
+    SDL_SetRenderDrawColor(v->Renderer,
+        (Uint8)(255.0 * tr), 0, 0, 255);
+    SDL_FRect er = {
+        (float)rx - 3.0f, (float)ry - 3.0f, 6.0f, 6.0f
+    };
+    SDL_RenderFillRect(v->Renderer, &er);
+}
+
 void View_Draw_Agent(View *v, const Agent *a)
 {
     draw_circle_fill(v, a);
@@ -189,6 +225,8 @@ void View_Draw_Agent(View *v, const Agent *a)
     };
     SDL_SetRenderDrawColor(v->Renderer, 0, 220, 0, 255);
     SDL_RenderFillRect(v->Renderer, &bar);
+
+    View_Draw_Agent_Eyes(v, a);
 
     draw_spike(v, a);
 }

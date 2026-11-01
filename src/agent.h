@@ -3,6 +3,12 @@
 
 #include "base.h"  // u32, u64
 
+enum {
+    SENSOR_LEFT  = 0,   // left eye
+    SENSOR_RIGHT = 1,   // right eye
+    NUM_SENSORS  = 2    // grows as more sensors are added
+};
+
 typedef struct {
     double X;
     double Y;
@@ -18,6 +24,8 @@ typedef struct {
 
     double Health;
     int    Age;
+
+    double Sensors[NUM_SENSORS];
 } Agent;
 
 void Agent_Init(Agent *a, double x, double y);

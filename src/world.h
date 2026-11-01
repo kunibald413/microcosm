@@ -21,6 +21,12 @@ static const double HEALTH_LOSS_PER_SEC = 0.02;
 static const double HEALTH_EAT_PER_SEC = 1.0;
 static const double HEALTH_MAX = 2.0;
 
+static const double EYE_OFFSET      = 0.4;    // radians, right of heading
+static const double EYE_REACH       = 30.0;   // distance from body to eye
+static const double EYE_SIGMA       = 50.0;   // sensor falloff width
+static const double STEER_GAIN      = 1.5;    // turn response to signal
+static const double SENSOR_BASELINE = 0.10;   // turn rate when no food
+
 typedef struct {
     Agent  Agents[MAX_AGENTS];
     bool   Active[MAX_AGENTS];

@@ -8,6 +8,7 @@ static const double AGENT_SPEED = 30.0;
 // radians per second
 static const double AGENT_WANDER_RATE = 0.6;
 
+
 void World_Init(World *w, int count, double width, double height)
 {
     w->Count  = count;
@@ -55,6 +56,41 @@ void World_Init(World *w, int count, double width, double height)
     }
 }
 
+
+static double SenseFood(World *w, const Agent *a, double eye_offset)
+{
+    const double eye_ang = a->Angle + eye_offset;
+    const double ex = a->X + cos(eye_ang) * EYE_REACH;
+    const double ey = a->Y + sin(eye_ang) * EYE_REACH;
+
+    const double two_sigma2 = 2.0 * EYE_SIGMA * EYE_SIGMA;
+    const double reach = 2.0 * EYE_SIGMA;
+
+    const int x0 = (int)((ex - reach) / FOOD_CELL_SIZE);
+    const int x1 = (int)((ex + reach) / FOOD_CELL_SIZE) + 1;
+    const int y0 = (int)((ey - reach) / FOOD_CELL_SIZE);
+    const int y1 = (int)((ey + reach) / FOOD_CELL_SIZE) + 1;
+
+    double sum = 0.0;
+    for (int y = y0; y <= y1; y++) {
+        if (y < 0 || y >= w->FoodRows) continue;
+        for (int x = x0; x <= x1; x++) {
+            if (x < 0 || x >= w->FoodCols) continue;
+            if (w->Food[y][x] <= 0.0f) continue;
+
+            const double fx = ((double)x + 0.5) * FOOD_CELL_SIZE;
+            const double fy = ((double)y + 0.5) * FOOD_CELL_SIZE;
+            const double dx = fx - ex;
+            const double dy = fy - ey;
+            const double d2 = dx * dx + dy * dy;
+
+            const double amount = (double)w->Food[y][x] / FOOD_MAX;
+            sum += amount * exp(-d2 / two_sigma2);
+        }
+    }
+    return sum;
+}
+
 void World_Update(World *w, double dt)
 {
     for (int i = 0; i < MAX_AGENTS; i++) {
@@ -64,8 +100,17 @@ void World_Update(World *w, double dt)
 
         Agent *a = &w->Agents[i];
 
+        a->Sensors[SENSOR_LEFT]  =
+            SenseFood(w, a, a->Angle - EYE_OFFSET);
+        a->Sensors[SENSOR_RIGHT] =
+            SenseFood(w, a, a->Angle + EYE_OFFSET);
+
         a->Angle += (Pcg32_Unit(&w->Rng) - 0.5)
                     * AGENT_WANDER_RATE * dt;
+
+        a->Angle += STEER_GAIN
+                    * (a->Sensors[SENSOR_RIGHT]
+                       - a->Sensors[SENSOR_LEFT]) * dt;
 
         // keep heading in [-PI, PI] so it stays small forever
         if (a->Angle < -MATH_PI) {

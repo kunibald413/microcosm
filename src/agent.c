@@ -13,6 +13,10 @@ void Agent_Init(Agent *a, double x, double y)
     a->SpikeLength = 0.6;
     a->Health = 1.0;
     a->Age = 0;
+    
+    for (int i = 0; i < NUM_SENSORS; i++) {
+        a->Sensors[i] = 0.0;
+    }
 }
 
 void Agent_Update(Agent *a, double dt)
