@@ -1,8 +1,9 @@
-#include "base.h"          // u32, u64
+#include "base.h"          // u32, u64, MiB
 #include <SDL3/SDL.h>      // SDL_Event, SDL_GetTicks, SDL_Delay
 #include <SDL3/SDL_main.h> // SDL_main
 #include <stdbool.h>
 #include "agent.h"
+#include "arena.h"
 #include "view.h"
 #include "world.h"
 
@@ -23,13 +24,17 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    World world;
-    World_Init(&world, 4, 
+    Arena *main_arena = Arena_Create(MiB(2));
+    Arena_Log(main_arena);
+
+    World *world = Arena_Push(main_arena, (u64)sizeof(World));
+    World_Init(world, 4,
         (double)screen_width,
         (double)screen_height);
 
     View_LogInfo(&view);
-    View_LogWorldSize(&world);
+    View_LogWorldSize(world);
+    Arena_Log(main_arena);
 
 
     u64 last_ns = SDL_GetTicksNS();
@@ -48,10 +53,10 @@ int main(int argc, char *argv[])
             }
         }
 
-        World_Update(&world, dt);
+        World_Update(world, dt);
 
         View_Clear(&view);
-        View_Draw_World(&view, &world);
+        View_Draw_World(&view, world);
         View_Present(&view);
 
         // frame cap, even if we have vsync enabled, just keep this
@@ -63,5 +68,6 @@ int main(int argc, char *argv[])
     }
 
     View_Destroy(&view);
+    Arena_Destroy(main_arena);
     return 0;
 }

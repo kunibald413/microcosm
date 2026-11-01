@@ -17,6 +17,7 @@ message(STATUS "SDL3 config:  ${SDL3_DIR}")
 add_executable(${PROJECT_NAME} 
     src/main.c
     src/agent.c
+    src/arena.c
     src/view.c
     src/world.c
     src/pcg.c
