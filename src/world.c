@@ -4,7 +4,7 @@
 #include <math.h>  // cos, sin
 
 // world units per second
-static const double AGENT_SPEED = 30.0; 
+static const double AGENT_SPEED = 20.0; 
 // radians per second
 static const double AGENT_WANDER_RATE = 0.6;
 
@@ -57,38 +57,11 @@ void World_Init(World *w, int count, double width, double height)
 }
 
 
-static double SenseFood(World *w, const Agent *a, double eye_offset)
+static inline f64 CAP(double a) 
 {
-    const double eye_ang = a->Angle + eye_offset;
-    const double ex = a->X + cos(eye_ang) * EYE_REACH;
-    const double ey = a->Y + sin(eye_ang) * EYE_REACH;
-
-    const double two_sigma2 = 2.0 * EYE_SIGMA * EYE_SIGMA;
-    const double reach = 2.0 * EYE_SIGMA;
-
-    const int x0 = (int)((ex - reach) / FOOD_CELL_SIZE);
-    const int x1 = (int)((ex + reach) / FOOD_CELL_SIZE) + 1;
-    const int y0 = (int)((ey - reach) / FOOD_CELL_SIZE);
-    const int y1 = (int)((ey + reach) / FOOD_CELL_SIZE) + 1;
-
-    double sum = 0.0;
-    for (int y = y0; y <= y1; y++) {
-        if (y < 0 || y >= w->FoodRows) continue;
-        for (int x = x0; x <= x1; x++) {
-            if (x < 0 || x >= w->FoodCols) continue;
-            if (w->Food[y][x] <= 0.0f) continue;
-
-            const double fx = ((double)x + 0.5) * FOOD_CELL_SIZE;
-            const double fy = ((double)y + 0.5) * FOOD_CELL_SIZE;
-            const double dx = fx - ex;
-            const double dy = fy - ey;
-            const double d2 = dx * dx + dy * dy;
-
-            const double amount = (double)w->Food[y][x] / FOOD_MAX;
-            sum += amount * exp(-d2 / two_sigma2);
-        }
-    }
-    return sum;
+	if (a<0.0) return 0.0;
+	if (a>1.0) return 1.0;
+	return a;
 }
 
 void World_Update(World *w, double dt)
@@ -100,25 +73,20 @@ void World_Update(World *w, double dt)
 
         Agent *a = &w->Agents[i];
 
-        a->Sensors[SENSOR_LEFT]  =
-            SenseFood(w, a, a->Angle - EYE_OFFSET);
-        a->Sensors[SENSOR_RIGHT] =
-            SenseFood(w, a, a->Angle + EYE_OFFSET);
+        // sensors
+        a->Sensors[SENSOR_HEALTH] = CAP(a->Health / HEALTH_MAX);
+        
+        int cx = (int)(a->X / FOOD_CELL_SIZE);
+        int cy = (int)(a->Y / FOOD_CELL_SIZE);
+        a->Sensors[SENSOR_FOOD] = w->Food[cx][cy] / FOOD_MAX;
 
+        // move
         a->Angle += (Pcg32_Unit(&w->Rng) - 0.5)
                     * AGENT_WANDER_RATE * dt;
 
-        a->Angle += STEER_GAIN
-                    * (a->Sensors[SENSOR_RIGHT]
-                       - a->Sensors[SENSOR_LEFT]) * dt;
-
         // keep heading in [-PI, PI] so it stays small forever
-        if (a->Angle < -MATH_PI) {
-            a->Angle += MATH_TAU;
-        }
-        if (a->Angle >  MATH_PI) {
-            a->Angle -= MATH_TAU;
-        }
+        if (a->Angle < -MATH_PI) a->Angle += MATH_TAU;
+        if (a->Angle >  MATH_PI) a->Angle -= MATH_TAU;
 
         a->X += cos(a->Angle) * AGENT_SPEED * dt;
         a->Y += sin(a->Angle) * AGENT_SPEED * dt;
