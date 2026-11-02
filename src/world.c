@@ -133,6 +133,7 @@ void World_Update(World *w, double dt)
 
     w->Ticks++;
 
+    // spawn food
     if (w->Ticks % FOOD_ADD_PERIOD == 0) {
         const int fx = (int)Pcg32_BoundedRand(
             &w->Rng, (u32)w->FoodCols);

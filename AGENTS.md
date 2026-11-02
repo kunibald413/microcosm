@@ -52,7 +52,7 @@ responses only. They do not apply to code, comments, or commit messages.
 
 
 # General coding
-- Do not add comments to the code in generally. 
+- Do not add comments to the code generally, keep existing comments 
 - If comments are requested, use `//` comments, never `/* ... */`. Stick to single-line comments, and cut the complexity.
 - Never have more than 79 characters per line
 - Comment non-standard-library #includes to say what symbols you use from them.

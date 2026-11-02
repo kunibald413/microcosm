@@ -17,7 +17,7 @@ enum {
 
 static const double FOOD_CELL_SIZE = 16.0;
 static const double FOOD_MAX = 1.0;
-static const double HEALTH_LOSS_PER_SEC = 0.02;
+static const double HEALTH_LOSS_PER_SEC = 0.002;
 static const double HEALTH_EAT_PER_SEC = 1.0;
 static const double HEALTH_MAX = 2.0;
 
