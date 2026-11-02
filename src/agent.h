@@ -58,6 +58,21 @@ enum {
     SENSOR_RIGHT = SENSOR_EYE1_PROX
 };
 
+enum {
+    // Brain output slots
+    OUTPUT_WHEEL1 = 0,   // left wheel speed
+    OUTPUT_WHEEL2,       // right wheel speed
+    OUTPUT_RED,          // body color red
+    OUTPUT_GREEN,        // body color green
+    OUTPUT_BLUE,         // body color blue
+    OUTPUT_SPIKE,        // spike length target
+    OUTPUT_BOOST,        // boost flag, > 0.5 means on
+    OUTPUT_SOUND,        // sound multiplier
+    OUTPUT_GIVE,         // food giving flag, > 0.5 means on
+
+    NUM_OUTPUTS
+};
+
 typedef struct {
     double X;
     double Y;
@@ -75,6 +90,7 @@ typedef struct {
     int    Age;
 
     double Sensors[NUM_SENSORS];
+    double BrainOutputs[NUM_OUTPUTS];
 } Agent;
 
 void Agent_Init(Agent *a, double x, double y);
