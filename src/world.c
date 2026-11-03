@@ -64,6 +64,11 @@ static inline f64 CAP(double a)
 	return a;
 }
 
+double get_angle(double x, double y) {
+    if (x == 0.0 && y == 0.0) return 0.0;
+    return atan2(y, x);
+}
+
 void HandleInputs(World *w)
 {
     for (int i = 0; i < MAX_AGENTS; i++) {
@@ -79,6 +84,50 @@ void HandleInputs(World *w)
         int cx = (int)(a->X / FOOD_CELL_SIZE);
         int cy = (int)(a->Y / FOOD_CELL_SIZE);
         a->Sensors[SENSOR_FOOD] = w->Food[cx][cy] / FOOD_MAX;
+
+        // closer agents smell stronger 
+        // (linear falloff: 1.0 at touch, 0.0 at edge of range)
+        double smell_accum = 0.0;
+
+        // nearby, fast-moving agents are louder (proximity * speed)
+        double sound_accum = 0.0;
+        
+        // listen to other agents
+        double hearing_accum = 0.0;
+
+        for (int j = 0; j < MAX_AGENTS; j++) {
+            if (!w->Active[j]) continue;
+            if (j == i) continue; // skip self
+
+            Agent *other = &w->Agents[j];
+
+            if (a->X < other->X - SENSOR_RANGE 
+                || a->X > other->X + SENSOR_RANGE
+                || a->Y < other->Y - SENSOR_RANGE
+                || a->Y > other->Y + SENSOR_RANGE) 
+            {
+                continue;
+            }
+
+            double dx = a->X - other->X;
+            double dy = a->Y - other->Y;
+            double distance = sqrt(dx * dx + dy * dy);
+
+            if (distance >= SENSOR_RANGE) continue;
+            smell_accum += (SENSOR_RANGE - distance) / SENSOR_RANGE;
+            
+            // how loud this agent is
+            double speed = fmax(fabs(other->WheelSpeed1), fabs(other->WheelSpeed2)); 
+            sound_accum += (SENSOR_RANGE - distance) / SENSOR_RANGE * speed;
+
+            hearing_accum += other->SoundVolume * (SENSOR_RANGE -  distance) / SENSOR_RANGE;
+
+            dx = other->X - a->X;
+            dy = other->Y - a->Y;
+            double angle = get_angle(dx, dy);   // direction from a toward other, in [-pi, pi]
+
+            (void)angle;
+        }
     }
 }
 

@@ -84,6 +84,11 @@ typedef struct {
     double g;
     double b;
 
+    double WheelSpeed1;
+    double WheelSpeed2;
+
+    double SoundVolume; // how loud agent is
+
     double SpikeLength; // spike extension, 0 to 1
 
     double Health;

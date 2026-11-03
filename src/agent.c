@@ -10,6 +10,9 @@ void Agent_Init(Agent *a, double x, double y)
     a->r = 0.3;
     a->g = 0.8;
     a->b = 0.3;
+    a->WheelSpeed1 = 0.0;
+    a->WheelSpeed2 = 0.0;
+    a->SoundVolume = 1.0;
     a->SpikeLength = 0.6;
     a->Health = 1.0;
     a->Age = 0;
