@@ -64,7 +64,7 @@ static inline f64 CAP(double a)
 	return a;
 }
 
-void World_Update(World *w, double dt)
+void HandleInputs(World *w)
 {
     for (int i = 0; i < MAX_AGENTS; i++) {
         if (!w->Active[i]) {
@@ -79,6 +79,22 @@ void World_Update(World *w, double dt)
         int cx = (int)(a->X / FOOD_CELL_SIZE);
         int cy = (int)(a->Y / FOOD_CELL_SIZE);
         a->Sensors[SENSOR_FOOD] = w->Food[cx][cy] / FOOD_MAX;
+    }
+}
+
+void ProcessBrains(World *w)
+{
+    (void)w;
+}
+
+void ProcessOutputs(World *w, double dt) 
+{
+    for (int i = 0; i < MAX_AGENTS; i++) {
+        if (!w->Active[i]) {
+            continue;
+        }
+
+        Agent *a = &w->Agents[i];
 
         // move
         a->Angle += (Pcg32_Unit(&w->Rng) - 0.5)
@@ -99,16 +115,6 @@ void World_Update(World *w, double dt)
         if (a->Y >= w->Height) a->Y -= w->Height;
     }
 
-    w->Ticks++;
-
-    // spawn food
-    if (w->Ticks % FOOD_ADD_PERIOD == 0) {
-        const int fx = (int)Pcg32_BoundedRand(
-            &w->Rng, (u32)w->FoodCols);
-        const int fy = (int)Pcg32_BoundedRand(
-            &w->Rng, (u32)w->FoodRows);
-        w->Food[fy][fx] = (float)FOOD_MAX;
-    }
 
     for (int i = 0; i < MAX_AGENTS; i++) {
         if (!w->Active[i]) {
@@ -138,6 +144,26 @@ void World_Update(World *w, double dt)
             }
         }
     }
+}
+
+void World_Update(World *w, double dt)
+{
+    w->Ticks++;
+
+    // spawn food
+    if (w->Ticks % FOOD_ADD_PERIOD == 0) {
+        const int fx = (int)Pcg32_BoundedRand(
+            &w->Rng, (u32)w->FoodCols);
+        const int fy = (int)Pcg32_BoundedRand(
+            &w->Rng, (u32)w->FoodRows);
+        w->Food[fy][fx] = (float)FOOD_MAX;
+    }
+
+    HandleInputs(w);
+
+    ProcessBrains(w);
+
+    ProcessOutputs(w, dt);
 
     for (int i = 0; i < MAX_AGENTS; i++) {
         if (!w->Active[i]) {
