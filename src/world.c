@@ -273,7 +273,8 @@ void World_Update(World *w, double dt)
         Agent *a = &w->Agents[i];
 
         a->Health -= HEALTH_LOSS_PER_SEC * dt;
-        a->Age += 1;
+
+        if (w->Ticks % 1000 == 0) a->Age += 1;
 
         if (a->Health <= 0.0) {
             w->Active[i] = false;
