@@ -26,7 +26,7 @@ static const double EYE_REACH       = 30.0;   // distance from body to eye
 static const double EYE_SIGMA       = 50.0;   // sensor falloff width
 static const double STEER_GAIN      = 1.5;    // turn response to signal
 static const double SENSOR_BASELINE = 0.10;   // turn rate when no food
-static const double SENSOR_RANGE    = 150.0; // 
+static const double SENSOR_RANGE    = 150.0;
 
 typedef struct {
     Agent  Agents[MAX_AGENTS];

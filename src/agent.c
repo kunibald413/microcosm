@@ -20,6 +20,19 @@ void Agent_Init(Agent *a, double x, double y)
     for (int i = 0; i < NUM_SENSORS; i++) {
         a->Sensors[i] = 0.0;
     }
+
+    // Eyes: spread 4 cones roughly around the body
+    // each ~45° half-FOV.
+    for (int q = 0; q < NUM_EYES; q++) {
+        a->EyeDir[q] = (2.0 * M_PI * q / NUM_EYES) - M_PI;  // spread evenly, wrapped
+        a->EyeFov[q] = M_PI / 4.0;                          // +/- 45°
+    }
+
+    a->EyeSensMod   = 0.5;
+    a->SmellSensMod = 0.5;
+    a->SoundSensMod = 0.5;
+    a->HearSensMod  = 0.5;
+    a->BloodSensMod = 0.5;
 }
 
 void Agent_Update(Agent *a, double dt)

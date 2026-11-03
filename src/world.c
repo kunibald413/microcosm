@@ -69,6 +69,14 @@ double get_angle(double x, double y) {
     return atan2(y, x);
 }
 
+// Shortest signed angular difference a - b, in [-pi, pi].
+static inline double angle_diff(double a, double b) {
+    double d = a - b;
+    while (d < -MATH_PI) d += 2.0 * MATH_PI;
+    while (d >  MATH_PI) d -= 2.0 * MATH_PI;
+    return d;
+}
+
 void HandleInputs(World *w)
 {
     for (int i = 0; i < MAX_AGENTS; i++) {
@@ -94,6 +102,12 @@ void HandleInputs(World *w)
         
         // listen to other agents
         double hearing_accum = 0.0;
+
+        // Per-eye accumulators: depth + RGB color seen in each cone
+        double eye_p[NUM_EYES] = {0};
+        double eye_r[NUM_EYES] = {0};
+        double eye_g[NUM_EYES] = {0};
+        double eye_b[NUM_EYES] = {0};
 
         for (int j = 0; j < MAX_AGENTS; j++) {
             if (!w->Active[j]) continue;
@@ -122,11 +136,48 @@ void HandleInputs(World *w)
 
             hearing_accum += other->SoundVolume * (SENSOR_RANGE -  distance) / SENSOR_RANGE;
 
-            dx = other->X - a->X;
-            dy = other->Y - a->Y;
-            double angle = get_angle(dx, dy);   // direction from a toward other, in [-pi, pi]
+            double ddx = other->X - a->X;
+            double ddy = other->Y - a->Y;
+            double angle = get_angle(ddx, ddy);   // direction from a toward other, in [-pi, pi]
 
-            (void)angle;
+
+
+            for (int q = 0; q < NUM_EYES; q++) {
+                double aa   = a->Angle + a->EyeDir[q];
+                double diff = fabs(angle_diff(aa, angle));   // shortest angular difference
+                if (diff < a->EyeFov[q]) { // other is in field of view
+                    // Weight = sensitivity × how centered in cone × proximity falloff.
+                    double mul = a->EyeSensMod
+                            * (a->EyeFov[q] - diff) / a->EyeFov[q]
+                            * (SENSOR_RANGE - distance) / SENSOR_RANGE;
+
+                    eye_p[q] += mul * (distance / SENSOR_RANGE);   // depth, peaks mid-range
+                    eye_r[q] += mul * other->r;                    // seen agent's color
+                    eye_g[q] += mul * other->g;
+                    eye_b[q] += mul * other->b;
+                }
+            } // end eyes loop
+
+
+        } // end other agents loop
+
+        smell_accum   *= a->SmellSensMod;
+        sound_accum   *= a->SoundSensMod;
+        hearing_accum *= a->HearSensMod;
+
+        a->Sensors[SENSOR_SMELL]   = CAP(smell_accum);
+        a->Sensors[SENSOR_SOUND]   = CAP(sound_accum);
+        a->Sensors[SENSOR_HEARING] = CAP(hearing_accum);
+
+        static const int eye_base[NUM_EYES] = {
+            SENSOR_EYE0_PROX, SENSOR_EYE1_PROX,
+            SENSOR_EYE2_PROX, SENSOR_EYE3_PROX
+        };
+        for (int q = 0; q < NUM_EYES; q++) {
+            a->Sensors[eye_base[q] + 0] = CAP(eye_p[q]);
+            a->Sensors[eye_base[q] + 1] = CAP(eye_r[q]);
+            a->Sensors[eye_base[q] + 2] = CAP(eye_g[q]);
+            a->Sensors[eye_base[q] + 3] = CAP(eye_b[q]);
         }
     }
 }

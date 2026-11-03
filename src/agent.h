@@ -73,6 +73,10 @@ enum {
     NUM_OUTPUTS
 };
 
+enum {
+    NUM_EYES = 4,
+};
+
 typedef struct {
     double X;
     double Y;
@@ -94,8 +98,17 @@ typedef struct {
     double Health;
     int    Age;
 
+    double EyeSensMod;         // vision sensitivity gene, scales all eye inputs
+    double SmellSensMod;       // smell sensitivity gene
+    double SoundSensMod;       // ambient-sound sensitivity gene
+    double HearSensMod;        // voice/hearing sensitivity gene
+    double BloodSensMod;       // blood-sensor sensitivity gene
+
     double Sensors[NUM_SENSORS];
     double BrainOutputs[NUM_OUTPUTS];
+
+    double EyeDir[NUM_EYES];   // direction of each eye, radians
+    double EyeFov[NUM_EYES];   // field of view for each eye, radians
 } Agent;
 
 void Agent_Init(Agent *a, double x, double y);
