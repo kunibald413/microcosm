@@ -84,9 +84,9 @@ typedef struct {
     double Angle; // heading, radians, 0 points right
     double Radius; // body radius, world units
 
-    double r;
-    double g;
-    double b;
+    double Red;
+    double Green;
+    double Blue;
 
     double WheelSpeed1;
     double WheelSpeed2;
@@ -112,6 +112,5 @@ typedef struct {
 } Agent;
 
 void Agent_Init(Agent *a, double x, double y);
-void Agent_Update(Agent *a, double dt);
 
 #endif

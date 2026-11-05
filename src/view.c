@@ -15,9 +15,9 @@ static void draw_circle_fill(View *v, const Agent *a)
 
     verts[0].position.x = (float)a->X;
     verts[0].position.y = (float)a->Y;
-    verts[0].color.r = (float)a->r;
-    verts[0].color.g = (float)a->g;
-    verts[0].color.b = (float)a->b;
+    verts[0].color.r = (float)a->Red;
+    verts[0].color.g = (float)a->Green;
+    verts[0].color.b = (float)a->Blue;
     verts[0].color.a = 1.0f;
     verts[0].tex_coord.x = 0.0f;
     verts[0].tex_coord.y = 0.0f;

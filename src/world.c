@@ -152,12 +152,11 @@ void HandleInputs(World *w)
                             * (SENSOR_RANGE - distance) / SENSOR_RANGE;
 
                     eye_p[q] += mul * (distance / SENSOR_RANGE);   // depth, peaks mid-range
-                    eye_r[q] += mul * other->r;                    // seen agent's color
-                    eye_g[q] += mul * other->g;
-                    eye_b[q] += mul * other->b;
+                    eye_r[q] += mul * other->Red;                    // seen agent's color
+                    eye_g[q] += mul * other->Green;
+                    eye_b[q] += mul * other->Blue;
                 }
             } // end eyes loop
-
 
         } // end other agents loop
 
@@ -185,6 +184,16 @@ void HandleInputs(World *w)
 void ProcessBrains(World *w)
 {
     (void)w;
+
+    for (int i = 0; i < MAX_AGENTS; i++) {
+        if (!w->Active[i]) {
+            continue;
+        }
+        Agent *a = &w->Agents[i];
+        a->BrainOutputs[OUTPUT_RED] = 0.5;
+        a->BrainOutputs[OUTPUT_GREEN] = 0.1;
+        a->BrainOutputs[OUTPUT_BLUE] = 0.5;
+    }
 }
 
 void ProcessOutputs(World *w, double dt) 
@@ -195,6 +204,13 @@ void ProcessOutputs(World *w, double dt)
         }
 
         Agent *a = &w->Agents[i];
+    
+        a->Red = a->BrainOutputs[OUTPUT_RED];
+        a->Green = a->BrainOutputs[OUTPUT_GREEN];
+        a->Blue = a->BrainOutputs[OUTPUT_BLUE];
+        a->WheelSpeed1 = a->BrainOutputs[OUTPUT_WHEEL1];
+        a->WheelSpeed2 = a->BrainOutputs[OUTPUT_WHEEL2];
+        a->SoundVolume = a->BrainOutputs[OUTPUT_SOUND];
 
         // move
         a->Angle += (Pcg32_Unit(&w->Rng) - 0.5)
@@ -213,6 +229,7 @@ void ProcessOutputs(World *w, double dt)
         if (a->X >= w->Width)  a->X -= w->Width;
         if (a->Y < 0.0)        a->Y += w->Height;
         if (a->Y >= w->Height) a->Y -= w->Height;
+
     }
 
 
