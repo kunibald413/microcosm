@@ -2,6 +2,7 @@
 #include "world.h"
 #include "math_const.h"
 #include <math.h>  // cos, sin
+#include "mlp_brain.h"
 
 // world units per second
 static const double AGENT_SPEED = 20.0; 
@@ -50,7 +51,7 @@ void World_Init(World *w, int count, double width, double height)
         const double x = Pcg32_Unit(&w->Rng) * width;
         const double y = Pcg32_Unit(&w->Rng) * height;
 
-        Agent_Init(&w->Agents[i], x, y);
+        Agent_Init(&w->Agents[i], x, y, &w->Rng);
         w->Agents[i].Angle = Pcg32_Unit(&w->Rng) * MATH_TAU;
         w->Active[i] = true;
     }
@@ -64,7 +65,7 @@ static inline f64 CAP(double a)
 	return a;
 }
 
-double get_angle(double x, double y) {
+static double get_angle(double x, double y) {
     if (x == 0.0 && y == 0.0) return 0.0;
     return atan2(y, x);
 }
@@ -91,7 +92,9 @@ void HandleInputs(World *w)
         
         int cx = (int)(a->X / FOOD_CELL_SIZE);
         int cy = (int)(a->Y / FOOD_CELL_SIZE);
-        a->Sensors[SENSOR_FOOD] = w->Food[cx][cy] / FOOD_MAX;
+        if (cx < 0 || cx >= w->FoodCols) cx = 0;
+        if (cy < 0 || cy >= w->FoodRows) cy = 0;
+        a->Sensors[SENSOR_FOOD] = w->Food[cy][cx] / FOOD_MAX;
 
         // closer agents smell stronger 
         // (linear falloff: 1.0 at touch, 0.0 at edge of range)
@@ -183,16 +186,12 @@ void HandleInputs(World *w)
 
 void ProcessBrains(World *w)
 {
-    (void)w;
-
     for (int i = 0; i < MAX_AGENTS; i++) {
         if (!w->Active[i]) {
             continue;
         }
         Agent *a = &w->Agents[i];
-        a->BrainOutputs[OUTPUT_RED] = 0.5;
-        a->BrainOutputs[OUTPUT_GREEN] = 0.1;
-        a->BrainOutputs[OUTPUT_BLUE] = 0.5;
+        MLPBrain_Tick(&a->Brain, a->Sensors, a->BrainOutputs);
     }
 }
 

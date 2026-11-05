@@ -21,6 +21,8 @@ add_executable(${PROJECT_NAME}
     src/view.c
     src/world.c
     src/pcg.c
+    src/helpers.c
+    src/mlp_brain.c
 )
 
 add_library(project_warnings INTERFACE)

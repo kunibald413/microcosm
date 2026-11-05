@@ -3,6 +3,11 @@
 
 #include "base.h"  // u32, u64
 
+#include "mlp_brain.h" // MLPBrain
+
+
+
+
 enum {
     // Eye 0: proximity, red, green, blue
     SENSOR_EYE0_PROX = 0,
@@ -77,6 +82,11 @@ enum {
     NUM_EYES = 4,
 };
 
+
+_Static_assert(INPUTSIZE  == NUM_SENSORS, "INPUTSIZE must match NUM_SENSORS");
+_Static_assert(OUTPUTSIZE == NUM_OUTPUTS, "OUTPUTSIZE must match NUM_OUTPUTS");
+_Static_assert(INPUTSIZE + OUTPUTSIZE <= BRAINSIZE, "network too small for inputs and outputs");
+
 typedef struct {
     double X;
     double Y;
@@ -109,8 +119,10 @@ typedef struct {
 
     double EyeDir[NUM_EYES];   // direction of each eye, radians
     double EyeFov[NUM_EYES];   // field of view for each eye, radians
+
+    MLPBrain Brain;
 } Agent;
 
-void Agent_Init(Agent *a, double x, double y);
+void Agent_Init(Agent *a, double x, double y, Pcg32 *rng);
 
 #endif
