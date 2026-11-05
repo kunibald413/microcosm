@@ -12,6 +12,13 @@ static const double AGENT_WANDER_RATE = 0.6;
 
 void World_Init(World *w, int count, double width, double height)
 {
+    if (count < 0) {
+        count = 0;
+    }
+    if (count > MAX_AGENTS - 1) {
+        count = MAX_AGENTS - 1;
+    }
+
     w->Count  = count;
     w->Width  = width;
     w->Height = height;

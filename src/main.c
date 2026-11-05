@@ -24,11 +24,12 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    Arena *main_arena = Arena_Create(MiB(2));
+    Arena *main_arena = Arena_Create(MiB(3));
     Arena_Log(main_arena);
 
     World *world = Arena_Push(main_arena, (u64)sizeof(World));
-    World_Init(world, 2,
+    int num_start_agents = MAX_AGENTS;
+    World_Init(world, num_start_agents,
         (double)screen_width,
         (double)screen_height);
 

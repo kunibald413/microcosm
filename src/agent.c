@@ -36,6 +36,12 @@ void Agent_Init(Agent *a, double x, double y, Pcg32 *rng)
     a->HearSensMod  = 0.5;
     a->BloodSensMod = 0.5;
 
+    a->Herbivore = Pcg32_Unit(rng);
+    a->Boost     = 0.0;
+    a->Give      = 0.0;
+    a->Spiked    = false;
+    a->DeltaFood = 0.0;
+
     MLPBrain_Init(&a->Brain, rng);
 }
 

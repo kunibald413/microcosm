@@ -105,6 +105,12 @@ typedef struct {
 
     double SpikeLength; // spike extension, 0 to 1
 
+    double Herbivore;   /* 0 = carnivore, 1 = herbivore */
+    double Boost;       /* > 0.5 means boost is on */
+    double Give;        /* > 0.5 means food giving is on */
+    b8     Spiked;      /* was hit by a spike this tick */
+    double DeltaFood;   /* food change, for drawing only */
+
     double Health;
     int    Age;
 
